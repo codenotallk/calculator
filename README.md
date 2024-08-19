@@ -1,0 +1,27 @@
+# Calculator
+
+This is a project to help me to implement a simple Microservice.
+The context is quite simple. It will be a simple calculator. 
+The domain must be easy the grasp. The focus here is how to use all the important
+techniques to reach the goal.
+
+In the first step I'll work with a server and a browser or a curl as a client.
+I'll set two endpoints: one to calculate and the another to get these calculations.
+
+In the second part I'll store every calculation in a file
+In the third part I'll change the file persistency to a database MySQL in that case.
+In the fifth part I'll split the server in two servers. One to calculate and the another
+to receive the requests to get data.
+in the sixth part I'll join the two servers in the same endpoint again using a reverse proxy.
+In the seventh part I'll change the architecture to a EDA. Event driven Architecture. hehe. Here I'll use kafka. And for consume these messages a new service will be created.
+
+Finally in the part eigth I'll create a new service using push bullet service to notify the user.
+
+I'll divide in steps the track the evolution.
+
+## Part 1 - Step 1 - Create a server with a health endpoint.
+
+To make things easier. I'll create a library to encapsulate the answer (response).
+Now I have a common send.
+
+Now I have the server running. Now the next step is add a endpoint calculate. Bye
