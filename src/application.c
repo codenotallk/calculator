@@ -22,23 +22,37 @@ sat_status_t calculator_open (calculator_t *object, calculator_args_t *args)
 
     if (object != NULL && args != NULL)
     {
-
-        status = sat_webserver_open (&object->webserver, &(sat_webserver_args_t)
-                                                         {
-                                                            .endpoint_amount = 1,
-                                                            .mode = sat_webserver_mode_dynamic,
-                                                            .folder = ".",
-                                                            .port = "1234",
-                                                            .threads_amount = "1"
-                                                         });
-        if (sat_status_get_result (&status) == true)
+        do
         {
+            status = sat_webserver_open (&object->webserver, &(sat_webserver_args_t)
+                                                             {
+                                                                .endpoint_amount = 1,
+                                                                .mode = sat_webserver_mode_dynamic,
+                                                                .folder = ".",
+                                                                .port = "1234",
+                                                                .threads_amount = "1"
+                                                             });
+
+            if (sat_status_get_result (&status) == false)
+                break;
+
             status = sat_webserver_add_endpoint (&object->webserver,
                                                  "/v1/health",
                                                  "GET",
                                                  calculator_health_handler,
                                                  NULL);
-        }
+            
+            if (sat_status_get_result (&status) == false)
+                break;
+
+            status = sat_webserver_add_endpoint (&object->webserver,
+                                                 "/v1/calculate",
+                                                 "GET",
+                                                 calculator_calculate_handler,
+                                                 NULL);
+
+
+        } while (false);
     }
 
     return status;

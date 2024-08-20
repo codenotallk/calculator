@@ -14,6 +14,7 @@ target_sources (calculator
   ${CMAKE_CURRENT_LIST_DIR}/src/application.c
   ${CMAKE_CURRENT_LIST_DIR}/src/common.c
   ${CMAKE_CURRENT_LIST_DIR}/src/handlers/health.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/handlers/calculate.c
   ${CMAKE_CURRENT_LIST_DIR}/src/main.c
 )
 

@@ -25,3 +25,11 @@ To make things easier. I'll create a library to encapsulate the answer (response
 Now I have a common send.
 
 Now I have the server running. Now the next step is add a endpoint calculate. Bye
+
+
+## Part 1 - Step 2 - Create the calculate endpoint.
+
+I'm still in the step 1, but I will implement the calculate endpoint 
+To receive the message I'll create a DTO (Data Transfer Object).
+
+It's just performing a plus operation. or sum operation. that's it. bye.
