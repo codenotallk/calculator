@@ -4,11 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <operation_response.h>
+#include <repository.h>
 
 int calculator_calculate_handler (struct mg_connection *connection, void *data)
 {
-    // char *json = "{\"value_1\":%s,\"value_2\":%s,\"result\":%d}";
-
     const struct mg_request_info *ri = mg_get_request_info (connection);
 
     int status = sat_webserver_http_status_bad_request;
@@ -27,6 +26,8 @@ int calculator_calculate_handler (struct mg_connection *connection, void *data)
         operation_request_to (&request, &operation);
 
         operation_calculate (&operation);
+
+        repository_save (&operation);
 
         operation_response_from (&response, &operation);
 

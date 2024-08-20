@@ -42,3 +42,10 @@ Now I'll refactor the operation_request
 At this point I need a response object.
 
 Now the server can perform the basic operations, sum, subb, multiply and divide. that's it. bye.
+
+## Part 2 - Step 4 - Adding repository - persistence by file
+
+Before create the endpoint to consult all the operations already did. I need to add repository first. The layout will start that way.
+
+Now each request will be persisted.
+Now I can retrieve all these registers. that's it.
