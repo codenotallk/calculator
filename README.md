@@ -33,3 +33,12 @@ I'm still in the step 1, but I will implement the calculate endpoint
 To receive the message I'll create a DTO (Data Transfer Object).
 
 It's just performing a plus operation. or sum operation. that's it. bye.
+
+## Part 1 - Step 3 - Adding the operations
+The server is capable to perform just a sum operation. I'll add all four basic operations.
+For that I need to create the operation and do some refactor.
+Now I'll refactor the operation_request
+
+At this point I need a response object.
+
+Now the server can perform the basic operations, sum, subb, multiply and divide. that's it. bye.

@@ -3,10 +3,11 @@
 #include <operation_request.h>
 #include <stdlib.h>
 #include <string.h>
+#include <operation_response.h>
 
 int calculator_calculate_handler (struct mg_connection *connection, void *data)
 {
-    char *json = "{\"value_1\":%s,\"value_2\":%s,\"result\":%d}";
+    // char *json = "{\"value_1\":%s,\"value_2\":%s,\"result\":%d}";
 
     const struct mg_request_info *ri = mg_get_request_info (connection);
 
@@ -15,29 +16,21 @@ int calculator_calculate_handler (struct mg_connection *connection, void *data)
     char buffer_send [512] = {0};
 
     operation_request_t request;
+    operation_t operation;
+    operation_response_t response;
+
 
     if (ri->query_string != NULL)
     {
-        memset (&request, 0, sizeof (operation_request_t));
+        operation_request_from_query (&request, ri->query_string);
 
-        mg_get_var (ri->query_string,
-                    strlen (ri->query_string),
-                    "value_1",
-                    request.values._1,
-                    strlen (ri->query_string));
+        operation_request_to (&request, &operation);
 
-        mg_get_var (ri->query_string,
-                    strlen (ri->query_string),
-                    "value_2",
-                    request.values._2,
-                    strlen (ri->query_string));
+        operation_calculate (&operation);
 
-        snprintf (buffer_send,
-                  512 - 1,
-                  json,
-                  request.values._1,
-                  request.values._2,
-                  atoi (request.values._1) + atoi (request.values._2));
+        operation_response_from (&response, &operation);
+
+        operation_response_to_json (&response, buffer_send, sizeof (buffer_send));
 
         return calculator_response (connection,
                                 buffer_send,
