@@ -2,6 +2,9 @@
 #define OPERATION_H_
 
 #define OPERATION_TYPE_SIZE     30
+#define OPERATION_DATE_SIZE     20
+
+#define OPERATION_DATE_FORMAT   "%d/%m/%Y %H:%M:%S"
 
 typedef struct 
 {
@@ -14,6 +17,7 @@ typedef struct
     int result;
 
     char type [OPERATION_TYPE_SIZE + 1];
+    char date [OPERATION_DATE_SIZE + 1];
 
 } operation_t;
 

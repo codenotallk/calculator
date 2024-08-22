@@ -49,3 +49,10 @@ Before create the endpoint to consult all the operations already did. I need to 
 
 Now each request will be persisted.
 Now I can retrieve all these registers. that's it.
+
+## Part 2 - Step 5 - Adding Report Endpoint.
+
+Now I set up the step necessary to retrieve data. I keep with the same configuration.
+
+Right. I can get the data from database and obtain all of them from report endpoint.
+That's it.

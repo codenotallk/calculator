@@ -51,6 +51,15 @@ sat_status_t calculator_open (calculator_t *object, calculator_args_t *args)
                                                  calculator_calculate_handler,
                                                  NULL);
 
+            if (sat_status_get_result (&status) == false)
+                break;
+
+            status = sat_webserver_add_endpoint (&object->webserver,
+                                                 "/v1/report",
+                                                 "GET",
+                                                 calculator_report_handler,
+                                                 NULL);
+
 
         } while (false);
     }
