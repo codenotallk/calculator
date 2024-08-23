@@ -6,13 +6,15 @@
 #include <operation_response.h>
 #include <repository.h>
 
+#define CALCULATOR_NO_QUERY_ERROR   "{\"error\":\"<ip>:<port>/v1/calculate?value_1=10&value_2=10&type=sum\"}"
+
 int calculator_calculate_handler (struct mg_connection *connection, void *data)
 {
     const struct mg_request_info *ri = mg_get_request_info (connection);
 
-    int status = sat_webserver_http_status_bad_request;
+    int http_status = sat_webserver_http_status_bad_request;
 
-    char buffer_send [512] = {0};
+    char buffer_send [512] = CALCULATOR_NO_QUERY_ERROR;
 
     operation_request_t request;
     operation_t operation;
@@ -21,23 +23,33 @@ int calculator_calculate_handler (struct mg_connection *connection, void *data)
 
     if (ri->query_string != NULL)
     {
-        operation_request_from_query (&request, ri->query_string);
+        sat_status_t status = operation_request_from_query (&request, ri->query_string);
 
-        operation_request_to (&request, &operation);
+        if (sat_status_get_result (&status) == true)
+        {
+            operation_request_to (&request, &operation);
 
-        operation_calculate (&operation);
+            operation_calculate (&operation);
 
-        repository_save (&operation);
+            repository_save (&operation);
 
-        operation_response_from (&response, &operation);
+            operation_response_from (&response, &operation);
 
-        operation_response_to_json (&response, buffer_send, sizeof (buffer_send));
+            operation_response_to_json (&response, buffer_send, sizeof (buffer_send));
 
-        return calculator_response (connection,
-                                buffer_send,
-                                strlen (buffer_send),
-                                sat_webserver_http_status_ok);
+            http_status = sat_webserver_http_status_ok;
+        }
+
+        else
+        {
+            char *error = "{\"error\":\"%s\"}";
+            memset (buffer_send, 0, sizeof (buffer_send));
+            snprintf (buffer_send, sizeof (buffer_send) - 1, error, sat_status_get_motive (&status));
+        }
     }
 
-    return status;
+    return calculator_response (connection,
+                                buffer_send,
+                                strlen (buffer_send),
+                                http_status);
 }

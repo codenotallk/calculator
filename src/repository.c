@@ -14,17 +14,21 @@ void repository_save (operation_t *operation)
 
     sat_file_t file;
 
+    time_t now = sat_time_get_epoch_now ();
+
     sat_file_open (&file, REPOSITORY_CSV_FILENAME, sat_file_mode_append);
 
     snprintf (buffer, sizeof (buffer) - 1, REPOSITORY_CSV_FORMAT, operation->type,
                                                                   operation->values._1,
                                                                   operation->values._2,
                                                                   operation->result,
-                                                                  sat_time_get_epoch_now());
+                                                                  now);
 
     sat_file_write (&file, buffer, strlen (buffer));
 
     sat_file_close (&file);
+
+    sat_time_get_date_by_epoch (operation->date, OPERATION_DATE_SIZE, OPERATION_DATE_FORMAT, now);
 }
 
 sat_array_t *repository_get (uint32_t offset)

@@ -19,6 +19,8 @@ void operation_response_to_json (operation_response_t *object, char *buffer, uin
 {
     char *json = "{\"type\":\"%s\",\"value_1\":%d,\"value_2\":%d,\"result\":%d,\"date\":\"%s\"}";
 
+    memset (buffer, 0, size);
+
     snprintf (buffer,
               size - 1,
               json,

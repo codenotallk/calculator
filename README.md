@@ -56,3 +56,11 @@ Now I set up the step necessary to retrieve data. I keep with the same configura
 
 Right. I can get the data from database and obtain all of them from report endpoint.
 That's it.
+
+## Part 2 - Step 6 - Testing input from request
+
+The last step I forgot to implement th offset for repository.
+
+Now I can perform offset. I didn't set a verification for inputs that I receive. So Let's protect the application against those parameters that can be bad formed.
+
+I faced a little problem, but it is working now. Bye
