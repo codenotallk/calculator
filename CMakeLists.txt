@@ -21,6 +21,8 @@ target_sources (calculator
   ${CMAKE_CURRENT_LIST_DIR}/src/operation_response.c
   ${CMAKE_CURRENT_LIST_DIR}/src/file_repository.c
   ${CMAKE_CURRENT_LIST_DIR}/src/mysql_repository.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/interval.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/report_request.c
   ${CMAKE_CURRENT_LIST_DIR}/src/main.c
 )
 

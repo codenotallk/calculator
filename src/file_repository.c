@@ -8,7 +8,7 @@
 static void repository_set_offset (sat_file_t *file, uint32_t offset, char *buffer, uint32_t size);
 static void repository_get_object_from (operation_t *object, char *buffer);
 static void file_repository_save (void *object, operation_t *operation);
-static sat_array_t *file_repository_get (void *object, uint32_t offset);
+static sat_array_t *file_repository_get (void *object, interval_t *interval);
 
 bool file_repository_init (file_repository_t *object)
 {
@@ -51,7 +51,7 @@ static void file_repository_save (void *object, operation_t *operation)
     sat_time_get_date_by_epoch (operation->date, OPERATION_DATE_SIZE, OPERATION_DATE_FORMAT, now);
 }
 
-static sat_array_t *file_repository_get (void *object, uint32_t offset)
+static sat_array_t *file_repository_get (void *object, interval_t *interval)
 {
     (void) object;
 
@@ -62,7 +62,7 @@ static sat_array_t *file_repository_get (void *object, uint32_t offset)
 
     sat_file_open (&file, REPOSITORY_CSV_FILENAME, sat_file_mode_read);
 
-    repository_set_offset (&file, offset, line, sizeof (line));
+    repository_set_offset (&file, interval->offset, line, sizeof (line));
 
     sat_status_t status = sat_array_create (&array, &(sat_array_args_t)
                                                     {

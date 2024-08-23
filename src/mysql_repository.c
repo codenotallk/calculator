@@ -1,11 +1,28 @@
 #include <mysql_repository.h>
 #include <string.h>
 
+#define MYSQL_REPOSITORY_MAX_OBJECTS      20
+
+typedef enum 
+{
+    repository_index_id = 0,
+    repository_index_type,
+    repository_index_value_1,
+    repository_index_value_2,
+    repository_index_result,
+    repository_index_date,
+} repository_index_t;
+
 static void mysql_repository_save (void *object, operation_t *operation);
-static sat_array_t *mysql_repository_get (void *object, uint32_t offset);
+static sat_array_t *mysql_repository_get (void *object, interval_t *interval);
 static bool mysql_repository_is_args_valid (mysql_repository_args_t *args);
 static void mysql_repository_set_context (mysql_repository_t *object, mysql_repository_args_t *args);
 static bool mysql_repository_arg_field_is_valid (const char *field);
+static sat_status_t mysql_repository_get_connection (mysql_repository_t *object);
+
+static void mysql_repository_on_result_set (char **data, int columns, void *__data);
+
+static void mysql_repository_query_builder (char *query, interval_t *interval);
 
 bool mysql_repository_open (mysql_repository_t *object, mysql_repository_args_t *args)
 {
@@ -65,27 +82,12 @@ static void mysql_repository_save (void *object, operation_t *operation)
 
     do
     {
-        sat_status_t status = sat_mysql_init (&mysql->mysql);
+        sat_status_t status = mysql_repository_get_connection (mysql);
         if (sat_status_get_result (&status) == false)
         {
             printf ("%s\n", sat_status_get_motive (&status));
             break;
-        }
-
-        status = sat_mysql_open (&mysql->mysql, &(sat_mysql_args_t)
-                                                {
-                                                    .database = mysql->database,
-                                                    .hostname = mysql->hostname,
-                                                    .password = mysql->password,
-                                                    .user = mysql->user,
-                                                    .port = mysql->port
-                                                });
-
-        if (sat_status_get_result (&status) == false)
-        {
-            printf ("%s\n", sat_status_get_motive (&status));
-            break;
-        }
+        }        
 
         time_t now = sat_time_get_epoch_now ();
 
@@ -109,9 +111,37 @@ static void mysql_repository_save (void *object, operation_t *operation)
     } while (false);
 }
 
-static sat_array_t *mysql_repository_get (void *object, uint32_t offset)
+static sat_array_t *mysql_repository_get (void *object, interval_t *interval)
 {
     mysql_repository_t *mysql = (mysql_repository_t *) object;
+
+    sat_array_t *array = NULL;
+
+    char query [216] = {0};
+
+    sat_status_t status = sat_array_create (&array, &(sat_array_args_t)
+                                                    {
+                                                        .mode = sat_array_mode_static,
+                                                        .object_size = sizeof (operation_t),
+                                                        .size = MYSQL_REPOSITORY_MAX_OBJECTS
+                                                    });
+    if (sat_status_get_result (&status) == true)
+    {
+        status = mysql_repository_get_connection (mysql);
+
+        if (sat_status_get_result (&status) == true)
+        {
+            mysql_repository_query_builder (query, interval);
+
+            sat_mysql_execute (&mysql->mysql, query);
+
+            sat_mysql_result_set (&mysql->mysql, mysql_repository_on_result_set, array);
+
+            sat_mysql_close (&mysql->mysql);
+        }
+    }
+
+    return array;
 }
 
 static bool mysql_repository_arg_field_is_valid (const char *field)
@@ -125,4 +155,107 @@ static bool mysql_repository_arg_field_is_valid (const char *field)
     }
 
     return status;
+}
+
+static sat_status_t mysql_repository_get_connection (mysql_repository_t *object)
+{
+    sat_status_t status;
+
+    do 
+    {
+        status = sat_mysql_init (&object->mysql);
+
+        if (sat_status_get_result (&status) == false)
+        {
+            printf ("%s\n", sat_status_get_motive (&status));
+            break;
+        }
+
+        status = sat_mysql_open (&object->mysql, &(sat_mysql_args_t)
+                                                 {
+                                                    .database = object->database,
+                                                    .hostname = object->hostname,
+                                                    .password = object->password,
+                                                    .user = object->user,
+                                                    .port = object->port
+                                                 });
+
+        if (sat_status_get_result (&status) == false)
+        {
+            printf ("%s\n", sat_status_get_motive (&status));
+            break;
+        }
+    } while (false);
+
+    return status;
+}
+
+static void mysql_repository_on_result_set (char **data, int columns, void *__data)
+{
+    sat_array_t *array = (sat_array_t *) __data;
+
+    time_t date;
+
+    operation_t operation;
+
+    memset (&operation, 0, sizeof (operation_t));
+
+    strncpy (operation.type, data [repository_index_type], OPERATION_TYPE_SIZE);
+    operation.values._1 = atoi (data [repository_index_value_1]);
+    operation.values._2 = atoi (data [repository_index_value_2]);
+    operation.result    = atoi (data [repository_index_result]);
+
+    date = atoi (data [repository_index_date]);
+
+    sat_time_get_date_by_epoch (operation.date,
+                                OPERATION_DATE_SIZE,
+                                OPERATION_DATE_FORMAT,
+                                date);
+
+    sat_array_add (array, &operation);
+}
+
+static void mysql_repository_query_builder (char *query, interval_t *interval)
+{
+    const char *sql = "select * from reports_tb ";
+    char format [128] = {0};
+
+    strncat (query, sql, strlen (sql));
+
+    if (interval->date.from > 0 && interval->date.to > 0)
+    {
+        snprintf (format, sizeof (format) - 1, "where data between %d and %d ",
+                                                interval->date.from,
+                                                interval->date.to);
+
+        strncat (query, format, strlen (format));
+
+        memset (format, 0, sizeof (format));
+    }
+
+    else if (interval->date.from > 0)
+    {
+        snprintf (format, sizeof (format) - 1, "where data >= %d ",
+                                                interval->date.from);
+                                                
+
+        strncat (query, format, strlen (format));
+
+        memset (format, 0, sizeof (format));
+    }
+
+    else if (interval->date.to > 0)
+    {
+        snprintf (format, sizeof (format) - 1, "where data <= %d ",
+                                                interval->date.to);
+                                                
+
+        strncat (query, format, strlen (format));
+
+        memset (format, 0, sizeof (format));
+    }
+
+    snprintf (format, sizeof (format) - 1, "order by id desc limit 20 offset %d",
+                                           interval->offset);
+    strncat (query, format, strlen (format));
 }

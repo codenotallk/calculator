@@ -4,12 +4,13 @@
 #include <operation.h>
 #include <sat.h>
 #include <stdint.h>
+#include <interval.h>
 
 typedef struct
 {
     void *object;
     void (*save) (void *object, operation_t *operation);
-    sat_array_t *(*get) (void *object, uint32_t offset);
+    sat_array_t *(*get) (void *object, interval_t *interval);
 } repository_base_t;
 
 

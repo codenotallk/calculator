@@ -85,3 +85,21 @@ We already have the database working through docker.
 Next step is implement the mysql 
 
 Finally. Sometimes problems arise. That's life programming. The base implementation. It was done. Next I'll finish retrieve data from database. That's it.
+
+## Part 3 - Step 8 - Retrieving data from database
+
+In the step 7 I did a mistake. I was thinking the database and the application were inside the docker environment. That's the why the connection didn't work.
+
+Ok, Back on the rails. I will implement now the retrieving data using filters specifying the period.
+
+Now I need to open a connection. I'll create an auxiliary function to open. So I can use it
+in other contexts.
+
+To get data from database. It's necessary to scan each row retrieved from result set operation. To make things easier, I'll create a enum to mark the items position or columns.
+
+Ok!!! I have implemented the retrieve. Now let's add the filter. For that I need to create 
+another DTO for receive parameters from url to build the query based on these parameters.
+
+To handle this DTO inside the application I need another object.
+
+Phew!!! Finally finished. Now I can filter request from report data. That's it.
