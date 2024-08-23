@@ -64,3 +64,24 @@ The last step I forgot to implement th offset for repository.
 Now I can perform offset. I didn't set a verification for inputs that I receive. So Let's protect the application against those parameters that can be bad formed.
 
 I faced a little problem, but it is working now. Bye
+
+## Part 3 - Step 7 - Moving to a database engine
+
+I did all the persistence in Files. Well, files aren't the best way to persist a lot of data.
+So, I will change from file to database. In that case, it'll be a MySQL database.
+
+First things first. I don't want to lose all the job already did. So, First I'll extract the functions signatures into a interface. That way, I can inject the database of my choice.
+With that, I avoid to thrown away my job. 
+
+I have some goals for that: 
+* extract in a interface
+* add the MySQL database using docker compose
+* Implement the MySQL persistence.
+
+I already have the interface working as intended.
+Now I implement the docker compose to rise up the database.
+
+We already have the database working through docker.
+Next step is implement the mysql 
+
+Finally. Sometimes problems arise. That's life programming. The base implementation. It was done. Next I'll finish retrieve data from database. That's it.

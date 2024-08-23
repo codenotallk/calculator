@@ -1,6 +1,8 @@
 #include <application.h>
 #include <string.h>
 #include <handlers.h>
+#include <file_repository.h>
+#include <mysql_repository.h>
 
 sat_status_t calculator_init (calculator_t *object)
 {
@@ -24,6 +26,27 @@ sat_status_t calculator_open (calculator_t *object, calculator_args_t *args)
     {
         do
         {
+            // static file_repository_t file;
+
+            // if (file_repository_init (&file) == false)
+            //     break;
+
+            // object->repository = file.base;
+
+            static mysql_repository_t mysql;
+
+            if (mysql_repository_open (&mysql, &(mysql_repository_args_t)
+                                                     {
+                                                        .database = "report_db",
+                                                        // .hostname = "mysql_db",
+                                                        .hostname = "127.0.0.1",
+                                                        .user = "root",
+                                                        .password = "root",
+                                                        .port = 3306
+                                                     }));
+
+            object->repository = mysql.base;
+
             status = sat_webserver_open (&object->webserver, &(sat_webserver_args_t)
                                                              {
                                                                 .endpoint_amount = 1,
@@ -49,7 +72,7 @@ sat_status_t calculator_open (calculator_t *object, calculator_args_t *args)
                                                  "/v1/calculate",
                                                  "GET",
                                                  calculator_calculate_handler,
-                                                 NULL);
+                                                 &object->repository);
 
             if (sat_status_get_result (&status) == false)
                 break;
@@ -58,7 +81,7 @@ sat_status_t calculator_open (calculator_t *object, calculator_args_t *args)
                                                  "/v1/report",
                                                  "GET",
                                                  calculator_report_handler,
-                                                 NULL);
+                                                 &object->repository);
 
 
         } while (false);

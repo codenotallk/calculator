@@ -1,10 +1,23 @@
 version: "3"
 services:
-  development:
-    #build: .
-    image: solidcris/development
-    container_name: calculator
-    volumes:
-    - .:/development
+  # development:
+  #   #build: .
+  #   image: solidcris/development
+  #   container_name: calculator
+  #   volumes:
+  #   - .:/development
+  #   ports:
+  #   - "1234:1234"
+  mysql_db:
+    image: mysql
+    container_name: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
     ports:
-    - "1234:1234"
+      - 3306:3306
+    env_file:
+      - ./.env
+    volumes:
+      - /home/cssouza/database:/var/lib/mysql
+      # - /path/to/database:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d

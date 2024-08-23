@@ -4,12 +4,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <operation_response.h>
-#include <repository.h>
+#include <repository_base.h>
 
 #define CALCULATOR_NO_QUERY_ERROR   "{\"error\":\"<ip>:<port>/v1/calculate?value_1=10&value_2=10&type=sum\"}"
 
 int calculator_calculate_handler (struct mg_connection *connection, void *data)
 {
+    repository_base_t *repository = (repository_base_t *) data;
+
     const struct mg_request_info *ri = mg_get_request_info (connection);
 
     int http_status = sat_webserver_http_status_bad_request;
@@ -31,7 +33,7 @@ int calculator_calculate_handler (struct mg_connection *connection, void *data)
 
             operation_calculate (&operation);
 
-            repository_save (&operation);
+            repository->save (repository->object, &operation);
 
             operation_response_from (&response, &operation);
 

@@ -1,5 +1,5 @@
 #include <handlers.h>
-#include <repository.h>
+#include <repository_base.h>
 #include <common.h>
 #include <string.h>
 #include <operation_response.h>
@@ -7,6 +7,8 @@
 int calculator_report_handler (struct mg_connection *connection, void *data)
 {
     int status = sat_webserver_http_status_not_found;
+
+    repository_base_t *repository = (repository_base_t *) data;
 
     struct 
     {
@@ -30,7 +32,7 @@ int calculator_report_handler (struct mg_connection *connection, void *data)
         }
     }
 
-    sat_array_t *array = repository_get (offset.number);
+    sat_array_t *array = repository->get (repository->object, offset.number);
 
     char buffer [2048] = {0};
 

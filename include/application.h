@@ -1,11 +1,12 @@
 #ifndef APPLICATION_H_
 #define APPLICATION_H_
 
-#include <sat.h>
+#include <repository_base.h>
 
 typedef struct
 {
     sat_webserver_t webserver;
+    repository_base_t repository;
 } calculator_t;
 
 typedef struct 
