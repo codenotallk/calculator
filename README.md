@@ -103,3 +103,41 @@ another DTO for receive parameters from url to build the query based on these pa
 To handle this DTO inside the application I need another object.
 
 Phew!!! Finally finished. Now I can filter request from report data. That's it.
+
+## Part 3 - Step 9 - Benchmark the Server
+
+Now the server is running with a MySQL database.
+We can do the request to the server and the server will store the data into database.
+Currently the server is operating with a single thread.
+
+It's a good time to test the server and see how the server is performing.
+
+To do that I will use Apache Bench, This tool fits perfectly in our situation.
+
+to install the tool I used the following command
+
+```bash
+sudo apt-get install apache2-utils
+```
+
+Let's start with a 1000 request and simulating one client
+
+```bash
+ab -n 1000 -c 1 http://localhost:1234/v1/health
+```
+
+Let's test to see how long the server will answer all requests.
+1000 requests in 250ms 
+
+Let's try for calculate endpoint
+
+To make sure the data base will keep up. I'll will erase all the database.
+
+1000 requests in 7.2 seconds.
+Our server has a single thread. Let's increase to 5 and see what happens.
+
+Didn't change much as expected. There is an only client doing requests.
+
+100 clients 1000 requests same result. 
+And we have a problem. TO solve that I need to implement a queue to avoid these problems. 
+I hope so. that's it.

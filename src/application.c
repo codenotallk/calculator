@@ -53,7 +53,7 @@ sat_status_t calculator_open (calculator_t *object, calculator_args_t *args)
                                                                 .mode = sat_webserver_mode_dynamic,
                                                                 .folder = ".",
                                                                 .port = "1234",
-                                                                .threads_amount = "1"
+                                                                .threads_amount = "5"
                                                              });
 
             if (sat_status_get_result (&status) == false)
